@@ -60,7 +60,6 @@ public class AmazonPolly {
      * @param target the language in which the text is to be dubbed.
      * @param text   the text to be dubbed.
      * @return Future object containing an asynchronous text dubbing operation.
-     * @throws RuntimeException if Polly Client isn't created.
      */
     public Future<byte[]> submitAudio(Language target,
                                       String text) {

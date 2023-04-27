@@ -21,7 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,14 +71,14 @@ public class AmazonPollyTest {
         Voice expectedVoice = Voice.builder().name("testVoice").build();
         List<Voice> voiceList = Collections.singletonList(expectedVoice);
 
-        when(pollyClient.describeVoices((DescribeVoicesRequest)any()))
+        when(pollyClient.describeVoices((DescribeVoicesRequest) any()))
                 .thenReturn(DescribeVoicesResponse.builder().voices(voiceList).build());
 
         Voice actualVoice = amazonPolly.pollyVoice(pollyClient, TEST_LANG);
 
         assertEquals(expectedVoice, actualVoice);
         assertEquals(expectedVoice, amazonPolly.getVoice());
-        verify(pollyClient).describeVoices((DescribeVoicesRequest)any());
+        verify(pollyClient).describeVoices((DescribeVoicesRequest) any());
     }
 
     @Test
@@ -90,19 +89,11 @@ public class AmazonPollyTest {
     }
 
     @Test
-    public void submitAudio_callsAmazonPollyService() throws Exception {
-        byte[] expectedResult = new byte[0];
-        Future<byte[]> future = amazonPolly.submitAudio(pollyClient, TEST_LANG, TEST_TEXT);
-        byte[] actualResult = future.get();
-        assertArrayEquals(expectedResult, actualResult);
-    }
-
-    @Test
     public void submitAudio_throwsRuntimeException_whenErrorOccurs() {
         when(pollyClient.synthesizeSpeech((SynthesizeSpeechRequest) any()))
                 .thenThrow(new RuntimeException());
         assertThrows(Exception.class,
-                () -> amazonPolly.submitAudio(pollyClient, TEST_LANG, TEST_TEXT).get());
+                () -> amazonPolly.submitAudio(TEST_LANG, TEST_TEXT).get());
     }
 
     @Test

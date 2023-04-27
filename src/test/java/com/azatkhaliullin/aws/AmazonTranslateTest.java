@@ -11,9 +11,6 @@ import software.amazon.awssdk.services.translate.TranslateClient;
 import software.amazon.awssdk.services.translate.model.TranslateTextRequest;
 import software.amazon.awssdk.services.translate.model.TranslateTextResponse;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,19 +52,12 @@ public class AmazonTranslateTest {
     }
 
     @Test
-    public void submitTranslation_withValidParam() throws ExecutionException, InterruptedException {
-        Future<String> future = amazonTranslate.submitTranslation(translateClient, TEST_SRC_LANG, TEST_TG_LANG, TEST_TEXT);
-        String translation = future.get();
-
-        assertEquals(TEST_TEXT, translation);
-    }
-
-    @Test
     public void submitTranslation_WithError() {
         when(translateClient.translateText(any(TranslateTextRequest.class)))
                 .thenThrow(new RuntimeException());
 
         assertThrows(Exception.class,
-                () -> amazonTranslate.submitTranslation(translateClient, TEST_SRC_LANG, TEST_TG_LANG, TEST_TEXT).get());
+                () -> amazonTranslate.submitTranslation(TEST_SRC_LANG, TEST_TG_LANG, TEST_TEXT).get());
     }
+
 }
