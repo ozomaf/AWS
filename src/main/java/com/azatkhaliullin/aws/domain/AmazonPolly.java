@@ -1,6 +1,7 @@
 package com.azatkhaliullin.aws.domain;
 
 import com.azatkhaliullin.aws.dto.Language;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -20,6 +21,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * Provides text-based speech synthesis using the Amazon Polly.
  */
 @Slf4j
+@Data
 public class AmazonPolly {
 
     private final ThreadPoolExecutor executorService;
@@ -58,20 +60,25 @@ public class AmazonPolly {
      * @param target the language in which the text is to be dubbed.
      * @param text   the text to be dubbed.
      * @return Future object containing an asynchronous text dubbing operation.
+     * @throws RuntimeException if Polly Client isn't created.
      */
     public Future<byte[]> submitAudio(Language target,
                                       String text) {
-        return executorService.submit(() -> {
-            try (PollyClient client = PollyClient.builder()
-                    .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                    .build()) {
-                log.debug("AWS Polly client created");
-                return synthesizeSpeech(client, target, text);
-            } catch (Exception e) {
-                log.error("AWS Polly call error", e);
-                throw e;
-            }
-        });
+        try (PollyClient client = PollyClient.builder()
+                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .build()) {
+            log.debug("AWS Polly client created");
+            return submitAudio(client, target, text);
+        } catch (Exception e) {
+            log.error("AWS Polly call error", e);
+            throw e;
+        }
+    }
+
+    public Future<byte[]> submitAudio(PollyClient client,
+                                      Language target,
+                                      String text) {
+        return executorService.submit(() -> synthesizeSpeech(client, target, text));
     }
 
     /**
@@ -83,9 +90,9 @@ public class AmazonPolly {
      * @return an array of bytes representing the voiced text in MP3 format.
      * @throws IOException if an error happens when reading from the I/O stream.
      */
-    private byte[] synthesizeSpeech(PollyClient pollyClient,
-                                    Language target,
-                                    String text) throws IOException {
+    public byte[] synthesizeSpeech(PollyClient pollyClient,
+                                   Language target,
+                                   String text) throws IOException {
         log.debug("Sending a request to AWS Polly");
         SynthesizeSpeechRequest request = SynthesizeSpeechRequest.builder()
                 .text(text)
@@ -103,7 +110,7 @@ public class AmazonPolly {
             }
             outputStream.flush();
             return outputStream.toByteArray();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Error when sending a request to AWS Polly", e);
             throw e;
         }

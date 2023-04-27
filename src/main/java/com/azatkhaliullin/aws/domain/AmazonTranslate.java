@@ -58,17 +58,22 @@ public class AmazonTranslate {
     public Future<String> submitTranslation(Language source,
                                             Language target,
                                             String text) {
-        return executorService.submit(() -> {
-            try (TranslateClient client = TranslateClient.builder()
-                    .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                    .build()) {
-                log.debug("AWS Translate client created");
-                return translateText(client, source, target, text);
-            } catch (Exception e) {
-                log.error("AWS Translate call error", e);
-                throw e;
-            }
-        });
+        try (TranslateClient translateClient = TranslateClient.builder()
+                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .build()) {
+            log.debug("AWS Translate client created");
+            return submitTranslation(translateClient, source, target, text);
+        } catch (Exception e) {
+            log.error("AWS Translate call error", e);
+            throw e;
+        }
+    }
+
+    public Future<String> submitTranslation(TranslateClient translateClient,
+                                            Language source,
+                                            Language target,
+                                            String text) {
+        return executorService.submit(() -> translateText(translateClient, source, target, text));
     }
 
 }

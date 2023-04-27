@@ -22,7 +22,7 @@ public class SpringConfig {
     }
 
     @Bean
-    public AmazonPolly AmazonPolly(ThreadPoolExecutor pollyThreadPoolExecutor) {
+    public AmazonPolly amazonPolly(ThreadPoolExecutor pollyThreadPoolExecutor) {
         return new AmazonPolly(pollyThreadPoolExecutor);
     }
 
