@@ -53,27 +53,22 @@ public class AmazonTranslate {
      * @param source the language from which the translation is made.
      * @param target the language into which the translation is being made.
      * @param text   the text to be translated.
-     * @return Future<String> object that contains the result of the translation.
+     * @return Future object that contains the result of the translation.
      */
     public Future<String> submitTranslation(Language source,
                                             Language target,
                                             String text) {
-        try (TranslateClient translateClient = TranslateClient.builder()
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .build()) {
-            log.debug("AWS Translate client created");
-            return submitTranslation(translateClient, source, target, text);
-        } catch (Exception e) {
-            log.error("AWS Translate call error", e);
-            throw e;
-        }
-    }
-
-    public Future<String> submitTranslation(TranslateClient translateClient,
-                                            Language source,
-                                            Language target,
-                                            String text) {
-        return executorService.submit(() -> translateText(translateClient, source, target, text));
+        return executorService.submit(() -> {
+            try (TranslateClient translateClient = TranslateClient.builder()
+                    .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                    .build()) {
+                log.debug("AWS Translate client created");
+                return translateText(translateClient, source, target, text);
+            } catch (Exception e) {
+                log.error("AWS Translate call error", e);
+                throw e;
+            }
+        });
     }
 
 }

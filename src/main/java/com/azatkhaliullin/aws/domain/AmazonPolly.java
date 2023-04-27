@@ -64,21 +64,17 @@ public class AmazonPolly {
      */
     public Future<byte[]> submitAudio(Language target,
                                       String text) {
-        try (PollyClient client = PollyClient.builder()
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .build()) {
-            log.debug("AWS Polly client created");
-            return submitAudio(client, target, text);
-        } catch (Exception e) {
-            log.error("AWS Polly call error", e);
-            throw e;
-        }
-    }
-
-    public Future<byte[]> submitAudio(PollyClient client,
-                                      Language target,
-                                      String text) {
-        return executorService.submit(() -> synthesizeSpeech(client, target, text));
+        return executorService.submit(() -> {
+            try (PollyClient client = PollyClient.builder()
+                    .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                    .build()) {
+                log.debug("AWS Polly client created");
+                return synthesizeSpeech(client, target, text);
+            } catch (Exception e) {
+                log.error("AWS Polly call error", e);
+                throw e;
+            }
+        });
     }
 
     /**
