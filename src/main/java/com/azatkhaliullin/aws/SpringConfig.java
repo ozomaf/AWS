@@ -11,6 +11,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 public class SpringConfig {
 
+    public static final int THREADS_CNT = 10; // а ещё лучше вынести это значение в application.yml
+
     @Bean
     public AmazonTranslate amazonTranslate(ThreadPoolExecutor translateThreadPoolExecutor) {
         return new AmazonTranslate(translateThreadPoolExecutor);
@@ -18,7 +20,7 @@ public class SpringConfig {
 
     @Bean
     public ThreadPoolExecutor translateThreadPoolExecutor() {
-        return (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+        return (ThreadPoolExecutor) Executors.newFixedThreadPool(THREADS_CNT);
     }
 
     @Bean
@@ -28,7 +30,7 @@ public class SpringConfig {
 
     @Bean
     public ThreadPoolExecutor pollyThreadPoolExecutor() {
-        return (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+        return (ThreadPoolExecutor) Executors.newFixedThreadPool(THREADS_CNT);
     }
 
 }

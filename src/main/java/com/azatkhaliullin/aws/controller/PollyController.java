@@ -21,8 +21,10 @@ import java.util.concurrent.TimeoutException;
 @RequestMapping("/polly")
 public class PollyController {
 
-    private final AmazonPolly amazonPolly;
+    // константы обычно объявляются выше переменных
     private static final long DEFAULT_TIMEOUT = 3000; // value in milliseconds
+
+    private final AmazonPolly amazonPolly;
 
     /**
      * @param amazonPolly an instance of AmazonPolly for making requests to the AWS Polly service.
@@ -46,10 +48,10 @@ public class PollyController {
             return amazonPolly.submitAudio(target, text)
                     .get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException e) {
-            log.error("Request to AWS Polly service failed");
+            log.error("Request to AWS Polly service failed", e);
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
-            log.error("Exceeded query time for AWS Polly service");
+            log.error("Exceeded query time for AWS Polly service", e);
             throw new RuntimeException(e);
         }
     }

@@ -1,7 +1,8 @@
-package com.azatkhaliullin.aws.domain;
+package com.azatkhaliullin.aws.domain; // мне кажется, domain - не самое подхожящее имя для этого пакета, судя по находящимся в нём классам - они скорее сервисы
 
 import com.azatkhaliullin.aws.dto.Language;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -21,11 +22,14 @@ import java.util.concurrent.ThreadPoolExecutor;
  * Provides text-based speech synthesis using the Amazon Polly.
  */
 @Slf4j
-@Data
+//@Data это не data-класс, так как содержит бизнес-логику; эта аннотация добавляет сильно много ненужного: toString, конструктор, equals, hashcode и т.д.
 public class AmazonPolly {
 
     private final ThreadPoolExecutor executorService;
-    private Voice voice;
+
+    @Setter
+    @Getter // исключительно ради теста, но см. комментарий строчкой ниже
+    private Voice voice; // кажется, определяется только один раз когда равно null, и больше никогда не меняется. Возможно, чтобы зафиксировать это поведение, стоит сделать его final и определять значение в конструкторе, если бизнес-логикой не предполагается возможность его изменения в рантайме
 
     /**
      * @param executorService thread pool to be used to send pronunciation requests.
@@ -42,8 +46,8 @@ public class AmazonPolly {
      * @param target      the language in which the text is to be dubbed.
      * @return a voice for the text.
      */
-    public Voice pollyVoice(PollyClient pollyClient,
-                            Language target) {
+    Voice pollyVoice(PollyClient pollyClient, // здесь и ниже: если метод мог бы быть приватным, но мы пишем на него тест и поэтому вынуждены повысить ему уровень доступа, достаточно сделать метод package-private, а сам тест просто разместить в том же пакете
+                     Language target) {
         if (voice == null) {
             DescribeVoicesRequest request = DescribeVoicesRequest.builder()
                     .engine("standard")
@@ -85,9 +89,9 @@ public class AmazonPolly {
      * @return an array of bytes representing the voiced text in MP3 format.
      * @throws IOException if an error happens when reading from the I/O stream.
      */
-    public byte[] synthesizeSpeech(PollyClient pollyClient,
-                                   Language target,
-                                   String text) throws IOException {
+    byte[] synthesizeSpeech(PollyClient pollyClient,
+                            Language target,
+                            String text) throws IOException {
         log.debug("Sending a request to AWS Polly");
         SynthesizeSpeechRequest request = SynthesizeSpeechRequest.builder()
                 .text(text)
@@ -96,8 +100,8 @@ public class AmazonPolly {
                 .outputFormat(OutputFormat.MP3)
                 .build();
         log.debug("A request to AWS Polly is formed, {}", request);
-        try (ResponseInputStream<SynthesizeSpeechResponse> inputStream = pollyClient.synthesizeSpeech(request)) {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (ResponseInputStream<SynthesizeSpeechResponse> inputStream = pollyClient.synthesizeSpeech(request);
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) { // стоит убедиться, что ничего не сломается, но как будто стоит закрыть стрим по завершению работы с ним
             int readBytes;
             byte[] buffer = new byte[1024];
             while ((readBytes = inputStream.read(buffer)) > 0) {

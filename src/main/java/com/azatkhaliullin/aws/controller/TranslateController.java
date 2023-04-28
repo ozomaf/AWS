@@ -21,8 +21,10 @@ import java.util.concurrent.TimeoutException;
 @RequestMapping("/translate")
 public class TranslateController {
 
-    private final AmazonTranslate amazonTranslate;
+    // константы обычно объявляются выше переменных
     private static final long DEFAULT_TIMEOUT = 3000; // value in milliseconds
+
+    private final AmazonTranslate amazonTranslate;
 
     /**
      * @param amazonTranslate an instance of AmazonTranslate for making requests to the AWS Translate service.
@@ -48,10 +50,10 @@ public class TranslateController {
             return amazonTranslate.submitTranslation(source, target, text)
                     .get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException e) {
-            log.error("Request to AWS Translate service failed");
+            log.error("Request to AWS Translate service failed", e);
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
-            log.error("Exceeded query time for AWS Translate service");
+            log.error("Exceeded query time for AWS Translate service", e);
             throw new RuntimeException(e);
         }
     }

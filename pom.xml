@@ -71,12 +71,12 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.0</version> <!-- стоит перенести версию в properties и пронести её через dependencyManagement-->
         </dependency>
-        <dependency>
+        <dependency> <!-- эта зависимость точно нужна? не покрывается ли ui стартером org.springdoc:springdoc-openapi-starter-webmvc-ui?-->
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.7.0</version>
+            <version>1.7.0</version> <!-- стоит перенести версию в properties и пронести её через dependencyManagement-->
         </dependency>
     </dependencies>
 
