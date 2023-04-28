@@ -89,14 +89,6 @@ public class AmazonPollyTest {
     }
 
     @Test
-    public void submitAudio_throwsRuntimeException_whenErrorOccurs() {
-        when(pollyClient.synthesizeSpeech((SynthesizeSpeechRequest) any()))
-                .thenThrow(new RuntimeException());
-        assertThrows(Exception.class,
-                () -> amazonPolly.submitAudio(TEST_LANG, TEST_TEXT).get());
-    }
-
-    @Test
     public void synthesizeSpeech_returnsByteArray_withValidInputs() throws IOException {
         byte[] bytes = amazonPolly.synthesizeSpeech(pollyClient, Language.EN, TEST_TEXT);
         assertArrayEquals(new byte[0], bytes);

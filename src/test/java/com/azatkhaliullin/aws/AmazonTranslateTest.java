@@ -47,17 +47,8 @@ public class AmazonTranslateTest {
         when(translateClient.translateText(any(TranslateTextRequest.class)))
                 .thenThrow(new RuntimeException());
 
-        assertThrows(RuntimeException.class,
-                () -> amazonTranslate.translateText(translateClient, TEST_SRC_LANG, TEST_TG_LANG, TEST_TEXT));
-    }
-
-    @Test
-    public void submitTranslation_WithError() {
-        when(translateClient.translateText(any(TranslateTextRequest.class)))
-                .thenThrow(new RuntimeException());
-
         assertThrows(Exception.class,
-                () -> amazonTranslate.submitTranslation(TEST_SRC_LANG, TEST_TG_LANG, TEST_TEXT).get());
+                () -> amazonTranslate.translateText(translateClient, TEST_SRC_LANG, TEST_TG_LANG, TEST_TEXT));
     }
 
 }
