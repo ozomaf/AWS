@@ -1,6 +1,5 @@
-package com.azatkhaliullin.aws;
+package com.azatkhaliullin.aws.services;
 
-import com.azatkhaliullin.aws.domain.AmazonPolly;
 import com.azatkhaliullin.aws.dto.Language;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

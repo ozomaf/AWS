@@ -1,7 +1,6 @@
-package com.azatkhaliullin.aws;
+package com.azatkhaliullin.aws.controller;
 
-import com.azatkhaliullin.aws.controller.TranslateController;
-import com.azatkhaliullin.aws.domain.AmazonTranslate;
+import com.azatkhaliullin.aws.services.AmazonTranslate;
 import com.azatkhaliullin.aws.dto.Language;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

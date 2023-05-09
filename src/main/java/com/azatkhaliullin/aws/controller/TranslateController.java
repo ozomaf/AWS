@@ -1,6 +1,6 @@
 package com.azatkhaliullin.aws.controller;
 
-import com.azatkhaliullin.aws.domain.AmazonTranslate;
+import com.azatkhaliullin.aws.services.AmazonTranslate;
 import com.azatkhaliullin.aws.dto.Language;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +21,8 @@ import java.util.concurrent.TimeoutException;
 @RequestMapping("/translate")
 public class TranslateController {
 
-    private final AmazonTranslate amazonTranslate;
     private static final long DEFAULT_TIMEOUT = 3000; // value in milliseconds
+    private final AmazonTranslate amazonTranslate;
 
     /**
      * @param amazonTranslate an instance of AmazonTranslate for making requests to the AWS Translate service.
@@ -38,7 +38,6 @@ public class TranslateController {
      * @param target the language into which the translation is being made.
      * @param text   the text to be translated.
      * @return the translated text.
-     * @throws RuntimeException if the translation request fails or times out.
      */
     @PostMapping
     public String getTranslate(@RequestParam Language source,
@@ -47,11 +46,8 @@ public class TranslateController {
         try {
             return amazonTranslate.submitTranslation(source, target, text)
                     .get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("Request to AWS Translate service failed");
-            throw new RuntimeException(e);
-        } catch (TimeoutException e) {
-            log.error("Exceeded query time for AWS Translate service");
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error("Request to AWS Translate service failed", e);
             throw new RuntimeException(e);
         }
     }

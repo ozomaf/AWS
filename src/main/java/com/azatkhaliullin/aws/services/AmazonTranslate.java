@@ -1,4 +1,4 @@
-package com.azatkhaliullin.aws.domain;
+package com.azatkhaliullin.aws.services;
 
 import com.azatkhaliullin.aws.dto.Language;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +34,10 @@ public class AmazonTranslate {
      * @param text            the text to be translated.
      * @return string with the translated text.
      */
-    public String translateText(TranslateClient translateClient,
-                                Language source,
-                                Language target,
-                                String text) {
+    String translateText(TranslateClient translateClient,
+                         Language source,
+                         Language target,
+                         String text) {
         TranslateTextRequest request = TranslateTextRequest.builder()
                 .sourceLanguageCode(source.getAwsTranslateValue())
                 .targetLanguageCode(target.getAwsTranslateValue())
